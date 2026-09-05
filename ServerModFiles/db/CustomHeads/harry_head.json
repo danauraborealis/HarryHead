@@ -1,0 +1,13 @@
+{
+  "6a9b4472d7e7d9dbe3a7a451": {
+    "path": "harryhead.bundle",
+    "addHeadToPlayer": true,
+    "availableAsDefault": true,
+    "side": [
+      "Usec"
+    ],
+    "locales": {
+      "en": "Harry"
+    }
+  }
+}

@@ -1,0 +1,14 @@
+<Project>
+  <!-- Single source of truth for the mod identity and local SPT install. -->
+  <PropertyGroup>
+    <ModVersion>1.0.0</ModVersion>
+    <ModGuid>com.manimal.harryhead</ModGuid>
+    <ModUsername>Manimal</ModUsername>
+    <ModDisplayName>HarryHead</ModDisplayName>
+    <SPTPath>D:\SPTDev</SPTPath>
+    <Version>$(ModVersion)</Version>
+    <AssemblyVersion>$(ModVersion)</AssemblyVersion>
+    <FileVersion>$(ModVersion)</FileVersion>
+  </PropertyGroup>
+</Project>
+

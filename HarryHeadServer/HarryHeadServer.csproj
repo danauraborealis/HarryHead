@@ -1,0 +1,76 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net9.0</TargetFramework>
+    <OutputType>Library</OutputType>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <AppendTargetFrameworkToOutputPath>false</AppendTargetFrameworkToOutputPath>
+    <RootNamespace>Manimal.HarryHead.Server</RootNamespace>
+    <AssemblyName>HarryHeadServer</AssemblyName>
+    <Version>$(ModVersion)</Version>
+    <Authors>$(ModUsername)</Authors>
+    <Company>$(ModUsername)</Company>
+    <Product>$(ModDisplayName)</Product>
+    <Description>Adds the Harry custom head through WTT CommonLib.</Description>
+    <Copyright>Copyright © $(ModUsername)</Copyright>
+    <PackageLicenseExpression>MIT</PackageLicenseExpression>
+    <CopyLocalLockFileAssemblies>false</CopyLocalLockFileAssemblies>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="SPTarkov.Common" Version="4.0.13" />
+    <PackageReference Include="SPTarkov.DI" Version="4.0.13" />
+    <PackageReference Include="SPTarkov.Server.Core" Version="4.0.13" />
+    <PackageReference Include="WTT-ServerCommonLib" Version="2.0.20" />
+  </ItemGroup>
+
+  <!--
+    dotnet build HarryHead.sln deploys the DLL and the complete ServerModFiles tree
+    into the local SPT install. deploy.ps1 can override SPTPath for another install.
+  -->
+  <Target Name="PostBuild" AfterTargets="PostBuildEvent" Condition="'$(SkipDeploy)' != 'true'">
+    <PropertyGroup>
+      <DevModDir>$(SPTPath)\SPT\user\mods\HarryHeadServer</DevModDir>
+      <ServerModFilesDir>$(ProjectDir)..\ServerModFiles</ServerModFilesDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <AllServerModFiles Include="$(ServerModFilesDir)\**\*" />
+    </ItemGroup>
+    <MakeDir Directories="$(DevModDir)" />
+    <Copy
+      SourceFiles="@(AllServerModFiles)"
+      DestinationFiles="@(AllServerModFiles->'$(DevModDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(DevModDir)" />
+  </Target>
+
+  <!--
+    Explicit release target:
+      dotnet build HarryHeadServer/HarryHeadServer.csproj -c Release \
+        -t:PackageModForDistribution -p:SkipDeploy=true
+  -->
+  <Target Name="PackageModForDistribution" DependsOnTargets="Build">
+    <PropertyGroup>
+      <RepoRoot>$(ProjectDir)..\</RepoRoot>
+      <PackageStaging>$(BaseIntermediateOutputPath)package\</PackageStaging>
+      <ServerPackageDir>$(PackageStaging)SPT\user\mods\HarryHeadServer</ServerPackageDir>
+      <PackageZip>$(RepoRoot)Manimal-$(ModDisplayName)-$(ModVersion).zip</PackageZip>
+      <ServerModFilesDir>$(RepoRoot)ServerModFiles</ServerModFilesDir>
+    </PropertyGroup>
+    <ItemGroup>
+      <AllPackageFiles Include="$(ServerModFilesDir)\**\*" />
+    </ItemGroup>
+
+    <RemoveDir Directories="$(PackageStaging)" />
+    <MakeDir Directories="$(ServerPackageDir)" />
+    <Copy SourceFiles="$(TargetPath)" DestinationFolder="$(ServerPackageDir)" />
+    <Copy
+      SourceFiles="@(AllPackageFiles)"
+      DestinationFiles="@(AllPackageFiles->'$(ServerPackageDir)\%(RecursiveDir)%(Filename)%(Extension)')" />
+    <Copy SourceFiles="$(RepoRoot)LICENSE" DestinationFolder="$(PackageStaging)" Condition="Exists('$(RepoRoot)LICENSE')" />
+    <Delete Files="$(PackageZip)" />
+    <ZipDirectory SourceDirectory="$(PackageStaging)" DestinationFile="$(PackageZip)" />
+    <RemoveDir Directories="$(PackageStaging)" />
+    <Message Text="Packaged $(PackageZip)" Importance="high" />
+  </Target>
+</Project>
+

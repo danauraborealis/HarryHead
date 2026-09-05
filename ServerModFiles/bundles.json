@@ -1,0 +1,10 @@
+{
+  "manifest": [
+    {
+      "key": "harryhead.bundle",
+      "dependencyKeys": [
+        "shaders"
+      ]
+    }
+  ]
+}
