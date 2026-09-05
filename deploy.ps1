@@ -17,7 +17,8 @@ $modVersion = [string]$props.Project.PropertyGroup.ModVersion
 $packagePath = Join-Path $repoRoot "Manimal-HarryHead-$modVersion.zip"
 
 $sptRoot = [System.IO.Path]::GetFullPath($SptPath)
-$modsRoot = Join-Path $sptRoot 'SPT\user\mods'
+$runtimeFolder = [string]$props.Project.PropertyGroup.SPTRuntimeFolder
+$modsRoot = Join-Path (Join-Path $sptRoot $runtimeFolder) 'user\mods'
 if (-not (Test-Path -LiteralPath $modsRoot -PathType Container)) {
     throw "SPT mods directory was not found: $modsRoot"
 }
